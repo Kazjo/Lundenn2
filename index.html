@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกลับหมายเลข 7401: การวิเคราะห์หมู่บ้าน Lundenwic | OBSCURA INITIATIVE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Noto+Serif+Thai:wght@300;400;700&family=VT323&family=Special+Elite&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #040404;
+            --text-color: #b8b1a6;
+            --heading-color: #e0ac2b;
+            --accent-color: #aa0000;
+            --code-color: #00f2fe;
+            --shadow-color: rgba(224, 172, 43, 0.2);
+            --font-body: 'Noto Serif Thai', serif;
+            --font-heading: 'Cinzel Decorative', cursive;
+            --font-code: 'VT323', monospace;
+            --font-typewriter: 'Special Elite', cursive;
+            --green: #00ff41;
+            --blood: #8b0000;
+            --parchment: #1a1510;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            line-height: 1.9;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Grain overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.5;
+        }
+
+        /* Mouse spotlight */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), transparent 8%, rgba(0,0,0,0.97) 38%);
+            pointer-events: none;
+            z-index: 999;
+            transition: background 0.08s ease;
+        }
+
+        /* ========== NAV TABS ========== */
+        #nav-tabs {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1001;
+            display: flex;
+            background: rgba(4,4,4,0.97);
+            border-bottom: 1px solid #1a1a1a;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tab {
+            padding: 14px 28px;
+            font-family: var(--font-code);
+            font-size: 1rem;
+            color: #444;
+            cursor: pointer;
+            letter-spacing: 2px;
+            border-right: 1px solid #111;
+            transition: all 0.3s ease;
+            position: relative;
+            user-select: none;
+        }
+
+        .nav-tab:hover { color: var(--heading-color); background: rgba(224,172,43,0.05); }
+
+        .nav-tab.active {
+            color: var(--heading-color);
+            background: rgba(224,172,43,0.08);
+        }
+
+        .nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0; right: 0;
+            height: 2px;
+            background: var(--heading-color);
+            box-shadow: 0 0 8px var(--heading-color);
+        }
+
+        .nav-tab.secret-tab {
+            margin-left: auto;
+            color: #300;
+            border-left: 1px solid #111;
+            border-right: none;
+        }
+        .nav-tab.secret-tab:hover { color: var(--accent-color); background: rgba(170,0,0,0.05); }
+        .nav-tab.secret-tab.active { color: var(--accent-color); background: rgba(170,0,0,0.08); }
+        .nav-tab.secret-tab.active::after { background: var(--accent-color); box-shadow: 0 0 8px var(--accent-color); }
+        .nav-tab.secret-tab .tab-blink { animation: blink 1.5s infinite; }
+
+        /* ========== PAGES ========== */
+        .page { display: none; padding-top: 50px; min-height: 100vh; }
+        .page.active { display: block; }
+
+        /* ========== TIMER ========== */
+        #timer-display {
+            position: fixed;
+            top: 15px; right: 30px;
+            font-family: var(--font-code);
+            color: #333;
+            font-size: 1.1rem;
+            z-index: 1002;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* ========== HEADER ========== */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid #1a1a1a;
+            position: relative;
+            background: radial-gradient(ellipse at center, rgba(30,20,5,0.5) 0%, transparent 70%);
+        }
+
+        .header-eyebrow {
+            font-family: var(--font-code);
+            color: #333;
+            letter-spacing: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: clamp(3rem, 8vw, 6rem);
+            color: var(--heading-color);
+            margin: 0;
+            text-shadow: 0 0 30px rgba(224,172,43,0.3), 0 0 60px rgba(224,172,43,0.1);
+            animation: flicker 6s infinite;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: #555;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 15px;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            font-family: var(--font-code);
+            color: #333;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            animation: blink 2s infinite;
+        }
+
+        /* ========== CONTAINER ========== */
+        .container {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 80px 24px;
+        }
+
+        section {
+            margin-bottom: 70px;
+            position: relative;
+        }
+
+        section::after {
+            content: '';
+            position: absolute;
+            bottom: -35px; left: 10%; width: 80%; height: 1px;
+            background: linear-gradient(90deg, transparent, #222, transparent);
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            color: var(--heading-color);
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            margin: 0 0 25px;
+            text-shadow: 0 0 8px rgba(224,172,43,0.15);
+        }
+
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 22px;
+            text-align: justify;
+            opacity: 0.85;
+        }
+
+        .highlight { color: var(--accent-color); font-weight: bold; }
+
+        .hidden-clue {
+            color: #0d0d0d;
+            font-family: var(--font-code);
+            font-size: 0.95rem;
+            cursor: crosshair;
+            transition: all 0.4s ease;
+            user-select: none;
+            position: relative;
+        }
+
+        .hidden-clue:hover {
+            color: var(--accent-color);
+            text-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .hidden-clue::after {
+            content: attr(title);
+            position: absolute;
+            top: -22px; left: 0;
+            font-size: 0.7rem;
+            color: #333;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        /* ========== MIKUCODE BLOCK ========== */
+        .mikucode-block {
+            font-family: var(--font-code);
+            background-color: #050808;
+            border: 1px solid #0d2020;
+            padding: 30px 25px 25px;
+            color: var(--code-color);
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,242,254,0.05), 0 0 1px rgba(0,242,254,0.2);
+        }
+
+        .mikucode-block::before {
+            content: 'DECRYPTED DATA [TYPE: MIKUCODE]';
+            position: absolute;
+            top: 8px; left: 12px;
+            font-size: 0.65rem;
+            color: #1a3535;
+            letter-spacing: 3px;
+        }
+
+        .mikucode-line {
+            display: block;
+            margin-bottom: 4px;
+            white-space: pre;
+            animation: codePulse 3s infinite;
+        }
+
+        /* ========== DECRYPT BUTTON ========== */
+        .investigate-btn {
+            display: block;
+            width: 100%;
+            max-width: 340px;
+            margin: 60px auto;
+            padding: 18px;
+            background: transparent;
+            color: var(--heading-color);
+            border: 1px solid var(--heading-color);
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-align: center;
+        }
+
+        .investigate-btn:hover {
+            background: var(--heading-color);
+            color: var(--bg-color);
+            box-shadow: 0 0 25px var(--shadow-color);
+        }
+
+        #terminal-interface {
+            display: none;
+            background: #020505;
+            border: 1px solid var(--code-color);
+            padding: 35px 30px;
+            margin-top: 30px;
+            font-family: var(--font-code);
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,242,254,0.15);
+            animation: fadeInSecret 0.8s ease;
+        }
+
+        #terminal-interface p { color: var(--code-color); margin-bottom: 10px; text-align: center; }
+
+        #passcode-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--code-color);
+            color: #fff;
+            font-family: var(--font-code);
+            font-size: 2.5rem;
+            text-align: center;
+            width: 180px;
+            outline: none;
+            letter-spacing: 12px;
+            margin-bottom: 20px;
+        }
+
+        #submit-btn {
+            background: var(--code-color);
+            color: #000;
+            border: none;
+            padding: 10px 24px;
+            font-family: var(--font-code);
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #submit-btn:hover { background: #fff; }
+        #error-msg { color: var(--accent-color); margin-top: 15px; display: none; }
+
+        #loading-ui { display: none; margin-top: 20px; }
+        #loading-text { color: var(--code-color); font-size: 1.2rem; margin-bottom: 15px; animation: blink 1s infinite; }
+        .progress-bar-container { width: 80%; height: 20px; border: 1px solid var(--code-color); margin: 0 auto; background: #111; }
+        #progress-bar { height: 100%; width: 0%; background: var(--code-color); transition: width 2.5s ease-in-out; }
+
+        #secret-box {
+            display: none;
+            background: #060306;
+            border: 1px solid var(--accent-color);
+            padding: 35px;
+            margin-top: 30px;
+            animation: fadeInSecret 1.5s ease;
+            box-shadow: 0 0 20px rgba(170,0,0,0.15);
+        }
+
+        #secret-box h3 { font-family: var(--font-heading); color: var(--accent-color); margin-top: 0; text-align: center; font-size: 1.2rem; }
+        #secret-box ul { list-style: none; padding: 0; }
+        #secret-box li { margin-bottom: 18px; padding-left: 24px; position: relative; font-size: 1rem; }
+        #secret-box li::before { content: '†'; position: absolute; left: 0; color: var(--accent-color); }
+
+        /* ========== SECRET CODE PAGE ========== */
+        #page-secret {
+            background: linear-gradient(180deg, #040103 0%, #020204 100%);
+        }
+
+        .secret-header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            border-bottom: 1px solid #1a0010;
+        }
+
+        .secret-header h2 {
+            font-family: var(--font-heading);
+            color: var(--accent-color);
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            text-shadow: 0 0 15px rgba(170,0,0,0.4);
+            margin-bottom: 10px;
+        }
+
+        .secret-header p {
+            color: #555;
+            font-family: var(--font-code);
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            opacity: 1;
+        }
+
+        .questions-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 50px 24px;
+        }
+
+        .question-card {
+            background: #06040a;
+            border: 1px solid #1a0a22;
+            margin-bottom: 30px;
+            position: relative;
+            transition: border-color 0.4s;
+            overflow: hidden;
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            background: #1a0a22;
+            transition: background 0.4s;
+        }
+
+        .question-card.answered-correct {
+            border-color: #00aa44;
+        }
+
+        .question-card.answered-correct::before {
+            background: #00aa44;
+            box-shadow: 0 0 10px #00aa44;
+        }
+
+        .question-card.answered-wrong {
+            border-color: var(--accent-color);
+            animation: shake 0.4s;
+        }
+
+        .question-card.answered-wrong::before {
+            background: var(--accent-color);
+        }
+
+        .question-inner {
+            padding: 25px 28px;
+        }
+
+        .question-number {
+            font-family: var(--font-code);
+            color: #333;
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+
+        .question-text {
+            color: #c8c0b8;
+            font-size: 1.05rem;
+            margin-bottom: 18px;
+            line-height: 1.7;
+        }
+
+        .question-hint {
+            font-family: var(--font-code);
+            color: #2a2020;
+            font-size: 0.85rem;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .question-hint:hover { color: #554444; }
+
+        .answer-input-wrap {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .answer-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #2a1a2a;
+            color: #fff;
+            font-family: var(--font-typewriter);
+            font-size: 1.1rem;
+            padding: 8px 4px;
+            outline: none;
+            transition: border-color 0.3s;
+            letter-spacing: 1px;
+        }
+
+        .answer-input:focus { border-color: #6a3a6a; }
+        .answer-input.correct { border-color: #00aa44; color: #00ff66; }
+        .answer-input.wrong { border-color: var(--accent-color); color: var(--accent-color); }
+
+        .answer-submit-btn {
+            background: transparent;
+            border: 1px solid #2a1a2a;
+            color: #555;
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .answer-submit-btn:hover { border-color: #6a3a6a; color: #9a6a9a; }
+
+        .question-feedback {
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            margin-top: 12px;
+            min-height: 20px;
+            letter-spacing: 1px;
+        }
+
+        .feedback-correct { color: #00aa44; }
+        .feedback-wrong { color: var(--accent-color); }
+
+        /* Revealed answer detail */
+        .answer-reveal {
+            display: none;
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(0,170,68,0.05);
+            border-left: 2px solid #00aa44;
+            font-size: 0.95rem;
+            color: #88cc99;
+            line-height: 1.7;
+            animation: fadeInSecret 0.6s ease;
+        }
+
+        .answer-reveal strong { color: #00ff66; }
+
+        /* ========== PROGRESS ========== */
+        .progress-section {
+            max-width: 700px;
+            margin: 0 auto 40px;
+            padding: 0 24px;
+        }
+
+        .progress-label {
+            font-family: var(--font-code);
+            color: #333;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .score-bar-wrap {
+            height: 4px;
+            background: #111;
+            border: 1px solid #1a1a1a;
+            position: relative;
+        }
+
+        #score-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-color);
+            transition: width 0.6s ease;
+            box-shadow: 0 0 8px var(--accent-color);
+        }
+
+        /* ========== FINAL REVEAL ========== */
+        #final-reveal {
+            display: none;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 24px 80px;
+        }
+
+        .final-box {
+            background: #08020e;
+            border: 1px solid #500030;
+            padding: 40px;
+            position: relative;
+            box-shadow: 0 0 40px rgba(170,0,0,0.15);
+            animation: fadeInSecret 2s ease;
+        }
+
+        .final-box::before {
+            content: '⛧ CLASSIFIED: LEVEL OMEGA ⛧';
+            display: block;
+            text-align: center;
+            font-family: var(--font-code);
+            color: #400020;
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            margin-bottom: 30px;
+        }
+
+        .final-box h3 {
+            font-family: var(--font-heading);
+            color: var(--accent-color);
+            text-align: center;
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(170,0,0,0.5);
+        }
+
+        .final-box p { font-size: 1rem; opacity: 0.9; }
+
+        .culprit-reveal {
+            background: rgba(170,0,0,0.08);
+            border: 1px solid #500020;
+            padding: 20px 24px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .culprit-name {
+            font-family: var(--font-heading);
+            color: var(--heading-color);
+            font-size: 1.6rem;
+            text-shadow: 0 0 20px var(--shadow-color);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .culprit-role { font-family: var(--font-code); color: #666; font-size: 0.9rem; letter-spacing: 2px; }
+
+        .final-score-display {
+            text-align: center;
+            margin-top: 30px;
+            font-family: var(--font-code);
+            color: #444;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+        }
+
+        #final-score-num { color: var(--heading-color); font-size: 1.5rem; }
+
+        /* ========== AUDIO BUTTON ========== */
+        #audio-btn {
+            position: fixed;
+            bottom: 24px; right: 24px;
+            width: 44px; height: 44px;
+            border: 1px solid #222;
+            background: rgba(4,4,4,0.9);
+            color: #444;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 1003;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        #audio-btn:hover { border-color: var(--heading-color); color: var(--heading-color); }
+        #audio-btn.playing { border-color: var(--heading-color); color: var(--heading-color); animation: audioPulse 2s infinite; }
+        @keyframes audioPulse { 0%,100%{box-shadow:0 0 0 0 rgba(224,172,43,0.3);}50%{box-shadow:0 0 0 8px rgba(224,172,43,0);} }
+
+        /* ========== EVIDENCE BOARD ========== */
+        .evidence-header {
+            text-align: center;
+            padding: 50px 20px 24px;
+            border-bottom: 1px solid #1a0a10;
+        }
+        .ev-eyebrow { font-family: var(--font-code); color: #333; font-size: 0.8rem; letter-spacing: 4px; margin-bottom: 10px; }
+        .ev-title { font-family: var(--font-heading); color: var(--heading-color); font-size: clamp(1.2rem,3vw,1.8rem); margin: 0 0 8px; text-shadow: 0 0 10px var(--shadow-color); }
+        .ev-sub { color: #555; font-family: var(--font-code); font-size: 0.85rem; letter-spacing: 1px; margin: 0 0 16px; opacity: 1; }
+        .ev-controls { display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap; }
+        .ev-btn {
+            background: transparent; border: 1px solid #2a1a1a; color: #554444;
+            font-family: var(--font-code); font-size: 0.85rem; padding: 7px 16px;
+            cursor: pointer; letter-spacing: 1px; transition: all 0.3s;
+        }
+        .ev-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+        .ev-connect-hint { font-family: var(--font-code); color: var(--heading-color); font-size: 0.85rem; letter-spacing: 1px; min-width: 200px; }
+
+        #cork-board {
+            position: relative;
+            width: 100%;
+            min-height: 720px;
+            background-color: #0a0706;
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(30,20,10,0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(20,10,5,0.4) 0%, transparent 50%),
+                repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.012) 39px, rgba(255,255,255,0.012) 40px),
+                repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.012) 39px, rgba(255,255,255,0.012) 40px);
+            border-top: 1px solid #1a1008;
+            border-bottom: 1px solid #1a1008;
+            overflow: hidden;
+            cursor: default;
+        }
+
+        #connections-svg {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            overflow: visible;
+        }
+
+        .connection-line {
+            stroke: rgba(224,172,43,0.35);
+            stroke-width: 1.5;
+            fill: none;
+            stroke-dasharray: 4 4;
+            animation: dashMove 2s linear infinite;
+        }
+        @keyframes dashMove { to { stroke-dashoffset: -16; } }
+
+        .ev-card {
+            position: absolute;
+            width: 190px;
+            background: #0c0809;
+            border: 1px solid #2a1a14;
+            padding: 14px 14px 12px;
+            cursor: pointer;
+            user-select: none;
+            z-index: 2;
+            transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
+            box-shadow: 3px 4px 12px rgba(0,0,0,0.6);
+        }
+        .ev-card:hover { border-color: #3a2a1a; box-shadow: 4px 6px 18px rgba(0,0,0,0.8); transform: rotate(0deg) scale(1.02); }
+        .ev-card.selected { border-color: var(--heading-color); box-shadow: 0 0 16px rgba(224,172,43,0.4); z-index: 10; }
+        .ev-card.dragging { opacity: 0.85; z-index: 20; transform: rotate(2deg) scale(1.04); cursor: grabbing; }
+
+        .ev-card-pin {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--accent-color);
+            box-shadow: 0 0 6px var(--accent-color);
+            position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
+        }
+        .ev-card-tag {
+            font-family: var(--font-code); font-size: 0.65rem; letter-spacing: 2px;
+            color: #aa4422; border: 1px solid #2a1008; background: #120604;
+            padding: 2px 6px; display: inline-block; margin-bottom: 8px;
+        }
+        .ev-card-title { font-family: var(--font-heading); color: var(--heading-color); font-size: 0.8rem; margin-bottom: 8px; line-height: 1.3; }
+        .ev-card-body { font-size: 0.78rem; color: #887060; line-height: 1.5; margin-bottom: 8px; }
+        .ev-card-footer { font-family: var(--font-code); font-size: 0.7rem; color: #443020; letter-spacing: 1px; border-top: 1px solid #1a1008; padding-top: 6px; }
+
+        .ev-legend {
+            max-width: 600px; margin: 24px auto; padding: 0 24px 10px;
+            font-family: var(--font-code);
+        }
+        .ev-legend-title { color: #333; font-size: 0.75rem; letter-spacing: 3px; margin-bottom: 8px; }
+        .ev-legend-item { color: #443020; font-size: 0.8rem; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+        .ev-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+        /* ========== NOTEBOOK ========== */
+        #page-notebook { background: linear-gradient(180deg, #040305 0%, #030204 100%); }
+
+        .nb-header {
+            text-align: center;
+            padding: 50px 20px 24px;
+            border-bottom: 1px solid #0f0a18;
+        }
+
+        .nb-container { max-width: 760px; margin: 0 auto; padding: 40px 24px 60px; }
+
+        .nb-tags-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+        .nb-tag {
+            font-family: var(--font-code); font-size: 0.8rem; letter-spacing: 1px;
+            padding: 6px 14px; border: 1px solid #1a1020; color: #443355;
+            cursor: pointer; transition: all 0.3s; background: transparent;
+        }
+        .nb-tag:hover, .nb-tag.active { border-color: #6a3a8a; color: #aa66cc; background: rgba(100,40,120,0.08); }
+
+        .nb-new-form {
+            background: #06040a; border: 1px solid #1a1020;
+            padding: 20px; margin-bottom: 32px;
+        }
+        .nb-select {
+            background: transparent; border: 1px solid #1a1020; color: #886699;
+            font-family: var(--font-code); font-size: 0.85rem; padding: 6px 10px;
+            margin-bottom: 12px; outline: none; cursor: pointer; width: 100%;
+        }
+        .nb-select option { background: #0a0810; }
+        .nb-title-inp {
+            width: 100%; background: transparent; border: none;
+            border-bottom: 1px solid #1a1020; color: #ccc;
+            font-family: var(--font-typewriter); font-size: 1rem;
+            padding: 6px 4px; outline: none; margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+        .nb-title-inp:focus { border-color: #6a3a8a; }
+        .nb-body-inp {
+            width: 100%; background: transparent; border: 1px solid #1a1020;
+            color: #998899; font-family: var(--font-typewriter); font-size: 0.9rem;
+            padding: 10px; outline: none; resize: vertical; line-height: 1.6;
+        }
+        .nb-body-inp:focus { border-color: #6a3a8a; }
+        .nb-add-btn {
+            margin-top: 12px; background: transparent; border: 1px solid #6a3a8a;
+            color: #aa66cc; font-family: var(--font-code); font-size: 0.9rem;
+            padding: 9px 22px; cursor: pointer; letter-spacing: 1px; transition: all 0.3s;
+        }
+        .nb-add-btn:hover { background: rgba(100,40,120,0.15); }
+
+        #notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+
+        .nb-note {
+            background: #06040a; border: 1px solid #1a1020;
+            padding: 16px; position: relative;
+            animation: fadeInSecret 0.5s ease;
+            transition: border-color 0.3s;
+        }
+        .nb-note:hover { border-color: #3a1a4a; }
+        .nb-note[data-cat="clue"] { border-left: 3px solid #00aabb; }
+        .nb-note[data-cat="theory"] { border-left: 3px solid #ccaa00; }
+        .nb-note[data-cat="suspect"] { border-left: 3px solid #aa2200; }
+        .nb-note[data-cat="warning"] { border-left: 3px solid #aa6600; }
+
+        .nb-note-cat { font-family: var(--font-code); font-size: 0.65rem; letter-spacing: 2px; color: #443355; margin-bottom: 6px; }
+        .nb-note-title { font-family: var(--font-typewriter); color: #ccc; font-size: 0.95rem; margin-bottom: 8px; }
+        .nb-note-body { font-size: 0.82rem; color: #776688; line-height: 1.5; }
+        .nb-note-time { font-family: var(--font-code); font-size: 0.65rem; color: #2a1a2a; margin-top: 10px; letter-spacing: 1px; }
+        .nb-note-del {
+            position: absolute; top: 8px; right: 10px;
+            color: #2a1020; cursor: pointer; font-size: 1rem;
+            transition: color 0.2s; background: none; border: none;
+            font-family: var(--font-code);
+        }
+        .nb-note-del:hover { color: var(--accent-color); }
+
+        .nb-empty { font-family: var(--font-code); color: #222; text-align: center; padding: 40px; letter-spacing: 2px; font-size: 0.85rem; }
+
+        /* ========== FOOTER ========== */
+        footer {
+            text-align: center;
+            padding: 35px;
+            font-size: 0.8rem;
+            color: #333;
+            background: #020202;
+            border-top: 1px solid #111;
+            font-family: var(--font-code);
+            letter-spacing: 1px;
+        }
+
+        /* ========== SELF DESTRUCT ========== */
+        #self-destruct-ui {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: #000;
+            z-index: 99999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: var(--font-code);
+        }
+
+        .warning-text { color: #ff0000; font-size: 2.5rem; text-align: center; margin: 10px; text-shadow: 0 0 10px #ff0000; }
+        .purge-text { color: #fff; font-size: 1.5rem; animation: blink 0.5s infinite; margin-top: 20px; }
+
+        /* ========== GLITCH ========== */
+        .glitch-flash { animation: rgbShift 0.2s steps(2) forwards; }
+        .glitch-shift { animation: skewShift 0.15s ease-in-out forwards; }
+
+        /* ========== ANIMATIONS ========== */
+        @keyframes flicker {
+            0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% { opacity: 1; }
+            20%, 21.999%, 63%, 63.999%, 65%, 69.999% { opacity: 0.25; text-shadow: none; }
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        @keyframes fadeInSecret {
+            from { opacity: 0; transform: scale(0.97) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        @keyframes codePulse {
+            0%, 100% { text-shadow: 0 0 4px rgba(0,242,254,0.15); }
+            50% { text-shadow: 0 0 10px rgba(0,242,254,0.5); }
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            50% { transform: translateX(8px); }
+            75% { transform: translateX(-8px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes rgbShift {
+            0% { text-shadow: 3px 0 0 red, -3px 0 0 cyan; transform: translate(2px, 1px); }
+            50% { text-shadow: -4px 0 0 red, 4px 0 0 cyan; transform: translate(-2px, -1px); }
+            100% { text-shadow: none; transform: translate(0, 0); }
+        }
+
+        @keyframes skewShift {
+            0% { transform: skewX(0deg); }
+            30% { transform: skewX(7deg); filter: invert(15%); }
+            60% { transform: skewX(-7deg); }
+            100% { transform: skewX(0deg); filter: none; }
+        }
+
+        .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 1s ease-out, transform 1s ease-out; }
+        .fade-in.appear { opacity: 1; transform: translateY(0); }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 600px) {
+            .nav-tab { padding: 12px 14px; font-size: 0.85rem; letter-spacing: 1px; }
+            .question-inner { padding: 20px 18px; }
+            h1 { font-size: 2.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="timer-display">T-MINUS: <span id="time-left">1000</span>s</div>
+
+    <!-- NAV TABS -->
+    <nav id="nav-tabs">
+        <div class="nav-tab active" onclick="switchTab('story')" id="tab-story">◈ FIELD LOG</div>
+        <div class="nav-tab" onclick="switchTab('decrypt')" id="tab-decrypt">⌘ DECRYPT</div>
+        <div class="nav-tab" onclick="switchTab('evidence')" id="tab-evidence">📌 EVIDENCE</div>
+        <div class="nav-tab" onclick="switchTab('notebook')" id="tab-notebook">✎ NOTEBOOK</div>
+        <div class="nav-tab secret-tab" onclick="switchTab('secret')" id="tab-secret">
+            ⛧ SECRET CODE <span class="tab-blink">_</span>
+        </div>
+    </nav>
+
+    <!-- AUDIO BUTTON -->
+    <div id="audio-btn" onclick="toggleAudio()" title="Toggle Ambience">
+        <span id="audio-icon">♪</span>
+    </div>
+
+    <!-- ========== PAGE: STORY ========== -->
+    <div class="page active" id="page-story">
+        <header>
+            <div class="header-eyebrow">OBSCURA INITIATIVE — FIELD JOURNAL SECTOR 7401</div>
+            <h1>Lundenwic</h1>
+            <div class="subtitle">ระบบบันทึกภาคสนาม: สภาวะผิดปกติ <span class="hidden-clue" title="CLUE I">[ 7 _ _ _ ]</span></div>
+            <div class="scroll-hint">SCROLL TO READ ↓</div>
+        </header>
+
+        <div class="container">
+            <section class="fade-in">
+                <h2>จุดเริ่มต้นของการเดินทาง</h2>
+                <p>ทุกอย่างเริ่มจากบันทึกเก่าๆ เล่มหนึ่ง ศาสตราจารย์ Harwick แห่งภาควิชาพฤกษศาสตร์โบราณได้มอบบันทึกภาคสนามของนักสำรวจในศตวรรษที่ 18 ให้กับกลุ่มนักศึกษาสี่คน ภายในบันทึกกล่าวถึงพืชชนิดหนึ่งที่ชาวบ้านแถบนั้นเรียกว่า <span class="highlight">Somnaria silvestris</span> <span class="hidden-clue" title="CLUE II">[ _ 4 _ _ ]</span> หรือ "ดอกไม้แห่งการหลับลึก" ซึ่งถูกพบครั้งสุดท้ายในพื้นที่ป่าลึกทางตะวันตกเฉียงเหนือของสหราชอาณาจักร</p>
+                <p>การเดินทางเต็มไปด้วยความยากลำบาก สัญญาณโทรศัพท์หายไปตั้งแต่ออกจากถนนหลัก พวกเขาขับรถลัดเลาะตามพิกัดในแผนที่กระดาษเก่านานหลายชั่วโมง จนกระทั่งถนนดินแคบลงเรื่อยๆ และสุดท้ายก็หมดสิ้น ไม่มีเส้นทางต่อไปอีกแล้ว พวกเขาเดินเท้าเข้าป่าและในที่สุดก็พบแสงไฟรำไรท่ามกลางความมืด นั่นคือหมู่บ้านแห่งหนึ่งที่ไม่มีชื่อในแผนที่สมัยใหม่</p>
+            </section>
+
+            <section class="fade-in">
+                <h2>Lundenwic: หมู่บ้านที่โลกหลงลืม</h2>
+                <p>หมู่บ้านแห่งนี้มีชื่อว่า Lundenwic ถูกสร้างขึ้นในปี 1523 ซ่อนตัวอยู่ท่ามกลางป่าเขาอันห่างไกล ชาวบ้านต้อนรับนักศึกษาอย่างอบอุ่น แม่บ้านเปิดห้องพักให้ นายพรานเฒ่าชื่อ <span class="highlight">Aldric</span> พาพวกเขาไปกินข้าวเย็น และนักบวชประจำหมู่บ้านชื่อ <span class="highlight">Father Cormac</span> — ชายวัยกลางคนที่มีดวงตาเฉียบคมและรอยยิ้มที่คาดเดาไม่ได้ — ออกมาต้อนรับพร้อมเล่าประวัติหมู่บ้านอย่างละเอียด</p>
+                <p>แต่มีสิ่งหนึ่งที่นักศึกษาสังเกตเห็นตั้งแต่คืนแรก นั่นคือ <strong>ไม่มีใครในหมู่บ้านออกจากบ้านหลังพระอาทิตย์ตกดิน</strong></p>
+            </section>
+
+            <section class="fade-in mikucode-block">
+                <span class="mikucode-line">>>> ENTRY_ID: LW_OBSERVATION_003</span>
+                <span class="mikucode-line">>>> LOC: 53.4808° N, 2.2426° W (ERROR: NOT FOUND ON MAP)</span>
+                <span class="mikucode-line">>>> STATUS: CLASSIFIED [LEVEL <span class="hidden-clue" title="CLUE III">[ _ _ 0 _ ]</span>]</span>
+                <span class="mikucode-line">-----------------------------------------</span>
+                <span class="mikucode-line">PARTIAL_DECRYPTION_SUCCESS:</span>
+                <span class="mikucode-line">1. ชาวบ้านทุกคนมีภาวะ Somnambulism (ละเมอเดิน) ระดับรุนแรง</span>
+                <span class="mikucode-line">2. แหล่งพลังงานของเทียนหอมไม่ใช่ Somnaria... มันคือ [DATA_CORRUPTED]</span>
+                <span class="mikucode-line">3. μIҜμCѺDҜ_SEQUENCE_77: 01100100 01100101 01100001 01100100</span>
+                <span class="mikucode-line">   01110011 01101111 01101111 01101110</span>
+                <span class="mikucode-line">-----------------------------------------</span>
+                <span class="mikucode-line">>>> LOG_END</span>
+            </section>
+
+            <section class="fade-in">
+                <h2>ปริศนาในกลิ่นหอม</h2>
+                <p>แหล่งรายได้หลักของ Lundenwic คือ "เทียนหอม" ที่ขึ้นชื่อ กลิ่นของมันนักศึกษาคนหนึ่งจำได้ทันทีว่าใกล้เคียงกับกลิ่น <em>Somnaria silvestris</em> เทียนมีสรรพคุณพิเศษ — ช่วยบรรเทาความเครียด ทำให้ผ่อนคลาย และผู้ที่สูดดมจะหลับสนิทตลอดคืน</p>
+                <p>เมื่อถามว่าส่วนผสมคืออะไร Father Cormac ยิ้มแล้วบอกว่า <em>"สูตรดั้งเดิมที่สืบทอดกันมา ไม่ใช่สิ่งที่เราบอกกับคนนอก"</em> แต่ตาของเขาหยุดนิ่งอยู่กับนักศึกษาที่ดูสนใจมากเป็นพิเศษนานกว่าปกติ</p>
+            </section>
+
+            <section class="fade-in">
+                <h2>ตำนานและรุ่งอรุณสีเลือด</h2>
+                <p>ใต้ความสงบสุขนั้น หมู่บ้านแห่งนี้มีตำนานของ <span class="highlight">"มนุษย์หมาป่า"</span> <span class="hidden-clue" title="CLUE IV">[ _ _ _ 1 ]</span> ที่ออกอาละวาดทุกครั้งที่มีคนแปลกหน้าเข้ามา ชาวบ้านทุกคนรู้จักตำนานนี้ดี แต่พูดถึงมันด้วยน้ำเสียงที่ฟังดูเหนื่อยใจ ราวกับเป็นเรื่องที่ต้องทนอยู่กับมันมานานแล้ว</p>
+                <p>แล้วเช้าวันที่สาม หลังจากที่นักศึกษาเริ่มแสดงความสนใจในสูตรเทียน ความสงบก็สิ้นสุดลง ชาวบ้านคนหนึ่งถูกพบเป็นศพที่ชายป่า สภาพร่างกายถูกฉีกกระชากอย่างน่าสยดสยอง และ Father Cormac ก็ออกมายืนอยู่ตรงนั้นก่อนใครอื่น ทั้งที่บ้านของเขาอยู่ฝั่งตรงข้าม</p>
+            </section>
+
+            <section class="fade-in">
+                <h2>การสืบสวนเริ่มต้น</h2>
+                <p>เมื่อถูกตัดขาดจากโลกภายนอก ไม่มีสัญญาณโทรศัพท์ และรถอยู่ไกลเกินกว่าจะถอยออกไปได้ในทันที นักศึกษาจึงต้องสืบสวนด้วยตัวเอง คำถามที่ค้างอยู่ในใจทุกคนไม่ใช่แค่ว่ามนุษย์หมาป่ามีจริงหรือไม่ แต่คือ ทำไมศพถึงปรากฏขึ้นพอดีหลังจากที่พวกเขาเริ่มถามเรื่องสูตรเทียน? <span class="highlight">Aldric</span> นายพรานเฒ่าหายตัวไปตอนไหน? และ Father Cormac ไปยืนอยู่ที่จุดเกิดเหตุได้อย่างไร ก่อนที่ข่าวจะกระจายออกไป?</p>
+                <p>ภายใต้กลิ่นหอมที่ทำให้ทุกคนหลับใหล หมู่บ้าน Lundenwic ซ่อนความจริงที่มีคนพร้อมฆ่าเพื่อปกปิดมันไว้...</p>
+            </section>
+        </div>
+
+        <footer>
+            &copy; 2026 OBSCURA INITIATIVE. [FIELD JOURNAL SECTOR 7401]. UNAUTHORIZED ACCESS PROHIBITED.
+        </footer>
+    </div>
+
+    <!-- ========== PAGE: DECRYPT ========== -->
+    <div class="page" id="page-decrypt">
+        <div class="container">
+            <section style="padding-top: 30px;">
+                <h2 style="text-align:center;">⌘ ถอดรหัสบันทึก</h2>
+                <p style="text-align:center; color: #555; font-family: var(--font-code); font-size: 0.9rem; letter-spacing: 2px;">ค้นหาตัวเลข 4 หลักที่ซ่อนอยู่ในบันทึก แล้วกรอกรหัสเพื่อปลดล็อกข้อมูลลับ</p>
+
+                <button class="investigate-btn" id="start-btn" onclick="openTerminal()">[ INITIATE DECRYPT ]</button>
+
+                <div id="terminal-interface">
+                    <div id="input-area">
+                        <p>SYSTEM LOCKED: <span style="color:red">OBSCURA INITIATIVE</span> AUTHORIZATION REQUIRED</p>
+                        <p style="font-size: 0.85rem; color: #555;">(ค้นหาโค้ด 4 หลักที่ซ่อนอยู่ในบันทึก — hover ที่วงเล็บเหลี่ยม)</p>
+                        <input type="text" id="passcode-input" maxlength="4" autocomplete="off" placeholder="_ _ _ _">
+                        <br>
+                        <button id="submit-btn" onclick="checkCode()">VERIFY CODE</button>
+                        <p id="error-msg">ACCESS DENIED: INVALID CODE</p>
+                    </div>
+                    <div id="loading-ui">
+                        <div id="loading-text">DECRYPTING DATA_</div>
+                        <div class="progress-bar-container">
+                            <div id="progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="secret-box">
+                    <h3>★ แฟ้มข้อมูลลับระดับ 4: ความจริงที่ถูกซ่อน ★</h3>
+                    <ul>
+                        <li><strong>ข้อมูลเสริม:</strong> สภาพศพถูกฉีกกระชากอย่างเป็นระบบ ไม่ใช่ลักษณะของสัตว์ป่า แต่คล้ายการ "จัดฉาก"</li>
+                        <li><strong>รายงานทางเคมี:</strong> ฤทธิ์ของ <em>Somnaria silvestris</em> ที่ชาวบ้านสูดดมทุกคืนทำให้เกิดภาวะ Somnambulism (ละเมอเดิน) ขั้นรุนแรง</li>
+                        <li><strong>เป้าหมายที่แท้จริง:</strong> Father Cormac คืออดีตนักวิจัยของ OBSCURA INITIATIVE เขาใช้หมู่บ้านนี้เป็นสถานที่ทดลองสารเคมีเพื่อควบคุมพฤติกรรมมนุษย์มาตั้งแต่ปี 2012</li>
+                    </ul>
+                    <p style="text-align:center; margin-top:25px; color:#aaa;"><em>"จงระวังกลิ่นหอมเมื่ออาทิตย์ลับขอบฟ้า..."</em></p>
+                    <p style="text-align:center; margin-top:15px;"><button class="investigate-btn" style="margin:0 auto; font-size:0.9rem; padding:12px 24px;" onclick="switchTab('secret')">⛧ ไปยัง SECRET CODE →</button></p>
+                </div>
+            </section>
+        </div>
+        <footer>
+            &copy; 2026 OBSCURA INITIATIVE. [FIELD JOURNAL SECTOR 7401]. UNAUTHORIZED ACCESS PROHIBITED.
+        </footer>
+    </div>
+
+    <!-- ========== PAGE: SECRET CODE ========== -->
+    <div class="page" id="page-secret">
+        <div class="secret-header">
+            <h2>⛧ SECRET CODE — LEVEL OMEGA</h2>
+            <p>ตอบคำถามจากเงื่อนงำในนิทานสันนิทาน เพื่อเปิดเผยความจริงสูงสุด</p>
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-label">INVESTIGATION PROGRESS: <span id="score-text">0 / 5</span></div>
+            <div class="score-bar-wrap">
+                <div id="score-bar-fill"></div>
+            </div>
+        </div>
+
+        <div class="questions-container">
+
+            <!-- Q1 -->
+            <div class="question-card" id="qcard-1">
+                <div class="question-inner">
+                    <div class="question-number">QUESTION_01 / ENTITY_CLASSIFICATION</div>
+                    <div class="question-text">
+                        Father Cormac คือใครกันแน่? เขาปกปิดตัวตนที่แท้จริงของเขาไว้ว่าอะไร?
+                        <br><small style="color:#444; font-family: var(--font-code); font-size:0.8rem;">— ค้นหาคำตอบจากข้อมูลในแฟ้มลับ หรือ MIKUCODE สาย 3 —</small>
+                    </div>
+                    <div class="question-hint" onclick="toggleHint(1)">[ ⚑ HINT: คลิกเพื่อดูคำใบ้ ]</div>
+                    <div id="hint-1" style="display:none; font-family:var(--font-code); color:#443344; font-size:0.85rem; margin-bottom:14px; letter-spacing:1px;">
+                        → เขาทำงานให้กับองค์กรเดียวกับที่สร้างไฟล์นี้
+                    </div>
+                    <div class="answer-input-wrap">
+                        <input type="text" class="answer-input" id="ans-1" placeholder="พิมพ์คำตอบที่นี่..." autocomplete="off" onkeypress="if(event.key==='Enter') checkAnswer(1)">
+                        <button class="answer-submit-btn" onclick="checkAnswer(1)">SUBMIT</button>
+                    </div>
+                    <div class="question-feedback" id="fb-1"></div>
+                    <div class="answer-reveal" id="reveal-1">
+                        <strong>✓ ถูกต้อง:</strong> Father Cormac คือ <strong>นักวิจัย / อดีตนักวิจัย</strong> ของ OBSCURA INITIATIVE — เขาไม่ใช่นักบวชแท้จริง แต่ใช้บทบาทนี้เพื่อปกปิดภารกิจลับ: การทดลองสารเคมีควบคุมพฤติกรรมมนุษย์บนชาวบ้านตั้งแต่ปี 2012
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="question-card" id="qcard-2">
+                <div class="question-inner">
+                    <div class="question-number">QUESTION_02 / CHEMICAL_AGENT</div>
+                    <div class="question-text">
+                        สารใดในเทียนหอมที่ทำให้ชาวบ้านเกิดอาการ Somnambulism (ละเมอเดิน) ทุกคืน?
+                        <br><small style="color:#444; font-family: var(--font-code); font-size:0.8rem;">— ชื่อภาษาละตินปรากฏในบันทึกภาคสนาม —</small>
+                    </div>
+                    <div class="question-hint" onclick="toggleHint(2)">[ ⚑ HINT: คลิกเพื่อดูคำใบ้ ]</div>
+                    <div id="hint-2" style="display:none; font-family:var(--font-code); color:#443344; font-size:0.85rem; margin-bottom:14px; letter-spacing:1px;">
+                        → "ดอกไม้แห่งการหลับลึก" ที่นักศึกษากลุ่มนี้ตามหา
+                    </div>
+                    <div class="answer-input-wrap">
+                        <input type="text" class="answer-input" id="ans-2" placeholder="พิมพ์ชื่อพืช/สาร..." autocomplete="off" onkeypress="if(event.key==='Enter') checkAnswer(2)">
+                        <button class="answer-submit-btn" onclick="checkAnswer(2)">SUBMIT</button>
+                    </div>
+                    <div class="question-feedback" id="fb-2"></div>
+                    <div class="answer-reveal" id="reveal-2">
+                        <strong>✓ ถูกต้อง:</strong> <strong>Somnaria silvestris</strong> — พืชลึกลับที่ชาวบ้านเรียกว่า "ดอกไม้แห่งการหลับลึก" ถูกนำมาใช้เป็นส่วนผสมหลักของเทียนหอม ทำให้ผู้สูดดมเกิดภาวะละเมอเดินขั้นรุนแรงโดยไม่รู้ตัว
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="question-card" id="qcard-3">
+                <div class="question-inner">
+                    <div class="question-number">QUESTION_03 / CRIME_SCENE_ANALYSIS</div>
+                    <div class="question-text">
+                        สภาพศพที่ถูกพบในหมู่บ้านบ่งชี้ว่าอย่างไร? มันคือการกระทำของอะไร (จากข้อมูลในแฟ้มลับ)?
+                        <br><small style="color:#444; font-family: var(--font-code); font-size:0.8rem;">— ข้อมูลเสริมในแฟ้มลับ ระดับ 4 —</small>
+                    </div>
+                    <div class="question-hint" onclick="toggleHint(3)">[ ⚑ HINT: คลิกเพื่อดูคำใบ้ ]</div>
+                    <div id="hint-3" style="display:none; font-family:var(--font-code); color:#443344; font-size:0.85rem; margin-bottom:14px; letter-spacing:1px;">
+                        → มันไม่ใช่สัตว์ป่า... มันถูก "จัด" ขึ้นมา
+                    </div>
+                    <div class="answer-input-wrap">
+                        <input type="text" class="answer-input" id="ans-3" placeholder="การกระทำลักษณะใด..." autocomplete="off" onkeypress="if(event.key==='Enter') checkAnswer(3)">
+                        <button class="answer-submit-btn" onclick="checkAnswer(3)">SUBMIT</button>
+                    </div>
+                    <div class="question-feedback" id="fb-3"></div>
+                    <div class="answer-reveal" id="reveal-3">
+                        <strong>✓ ถูกต้อง:</strong> สภาพศพเป็น <strong>การจัดฉาก</strong> — ถูกฉีกกระชากอย่างเป็นระบบ ไม่ใช่ลักษณะของสัตว์ป่า แต่เป็นความพยายามสร้างหลักฐานปลอมเพื่อปิดปากผู้ที่เริ่มสืบสวนสูตรเทียนหอม
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="question-card" id="qcard-4">
+                <div class="question-inner">
+                    <div class="question-number">QUESTION_04 / TIMELINE_BREACH</div>
+                    <div class="question-text">
+                        Father Cormac เริ่มดำเนินการทดลองลับในหมู่บ้าน Lundenwic ตั้งแต่ปีใด?
+                        <br><small style="color:#444; font-family: var(--font-code); font-size:0.8rem;">— ปรากฏในแฟ้มลับ —</small>
+                    </div>
+                    <div class="question-hint" onclick="toggleHint(4)">[ ⚑ HINT: คลิกเพื่อดูคำใบ้ ]</div>
+                    <div id="hint-4" style="display:none; font-family:var(--font-code); color:#443344; font-size:0.85rem; margin-bottom:14px; letter-spacing:1px;">
+                        → ปีที่มีตัวเลข: 2 _ _ 2
+                    </div>
+                    <div class="answer-input-wrap">
+                        <input type="text" class="answer-input" id="ans-4" placeholder="ปี ค.ศ. ..." autocomplete="off" onkeypress="if(event.key==='Enter') checkAnswer(4)">
+                        <button class="answer-submit-btn" onclick="checkAnswer(4)">SUBMIT</button>
+                    </div>
+                    <div class="question-feedback" id="fb-4"></div>
+                    <div class="answer-reveal" id="reveal-4">
+                        <strong>✓ ถูกต้อง:</strong> <strong>ปี 2012</strong> — Father Cormac เริ่มใช้หมู่บ้าน Lundenwic เป็นห้องทดลองลับสำหรับโครงการควบคุมพฤติกรรมมนุษย์ของ OBSCURA INITIATIVE มาตลอดกว่าทศวรรษ
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="question-card" id="qcard-5">
+                <div class="question-inner">
+                    <div class="question-number">QUESTION_05 / FINAL_CIPHER</div>
+                    <div class="question-text">
+                        รหัส 4 หลักที่ซ่อนอยู่ในบันทึก (เลข [7___], [_4__], [__0_], [___1]) รวมกันเป็นรหัสอะไร?
+                        <br><small style="color:#444; font-family: var(--font-code); font-size:0.8rem;">— hover ที่วงเล็บเหลี่ยมในหน้า FIELD LOG เพื่อค้นหา —</small>
+                    </div>
+                    <div class="question-hint" onclick="toggleHint(5)">[ ⚑ HINT: คลิกเพื่อดูคำใบ้ ]</div>
+                    <div id="hint-5" style="display:none; font-family:var(--font-code); color:#443344; font-size:0.85rem; margin-bottom:14px; letter-spacing:1px;">
+                        → เลข 4 ตัวที่อยู่ในวงเล็บรวมกัน: 7, 4, 0, 1
+                    </div>
+                    <div class="answer-input-wrap">
+                        <input type="text" class="answer-input" id="ans-5" placeholder="_ _ _ _" maxlength="4" autocomplete="off" onkeypress="if(event.key==='Enter') checkAnswer(5)">
+                        <button class="answer-submit-btn" onclick="checkAnswer(5)">SUBMIT</button>
+                    </div>
+                    <div class="question-feedback" id="fb-5"></div>
+                    <div class="answer-reveal" id="reveal-5">
+                        <strong>✓ ถูกต้อง:</strong> รหัส <strong>7401</strong> — หมายเลขภาคสนามของ OBSCURA INITIATIVE คือชื่อโครงการลับที่ Father Cormac ดำเนินการ: "PROJECT LUNDENWIC / SECTOR 7401" — การควบคุมมนุษยชาติผ่านกลิ่น
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /questions-container -->
+
+        <!-- FINAL REVEAL -->
+        <div id="final-reveal">
+            <div class="final-box">
+                <h3>⛧ ความจริงสูงสุดถูกเปิดเผยแล้ว ⛧</h3>
+                <p>การสืบสวนเสร็จสิ้น นักศึกษาทั้งสี่ค้นพบความจริงที่หมู่บ้าน Lundenwic ซ่อนไว้มานานกว่าทศวรรษ ไม่ใช่ตำนานมนุษย์หมาป่า ไม่ใช่สูตรเทียนหอมโบราณ แต่คือ...</p>
+                <div class="culprit-reveal">
+                    <span class="culprit-name">Father Cormac</span>
+                    <span class="culprit-role">OBSCURA INITIATIVE — SENIOR RESEARCHER // FIELD OPERATOR</span>
+                </div>
+                <p>ชายผู้สวมบทบาทนักบวชมานานกว่า 10 ปี เพื่อดำเนินโครงการทดลองสารเคมีจาก <em>Somnaria silvestris</em> บนชาวบ้านที่ไม่รู้อีโห้น ผ่านเทียนหอมที่ขายไปทั่วโลก ทุกคนที่จุดเทียนเหล่านั้น... กำลังเป็นส่วนหนึ่งของการทดลองที่ใหญ่กว่า</p>
+                <p>ศพที่ชายป่า? เป็นคำเตือน ไม่ใช่มนุษย์หมาป่า</p>
+                <div class="final-score-display">
+                    คะแนนสืบสวน: <span id="final-score-num">5</span> / 5<br>
+                    <span style="color:#444; font-size:0.8rem; display:block; margin-top:8px;">STATUS: CLEARANCE LEVEL OMEGA ACHIEVED</span>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            &copy; 2026 OBSCURA INITIATIVE. [FIELD JOURNAL SECTOR 7401]. UNAUTHORIZED ACCESS PROHIBITED.
+        </footer>
+    </div>
+
+    <!-- ========== PAGE: EVIDENCE BOARD ========== -->
+    <div class="page" id="page-evidence">
+        <div class="evidence-header">
+            <div class="ev-eyebrow">OBSCURA INITIATIVE — CASE FILE LW-7401</div>
+            <h2 class="ev-title">📌 กระดานหลักฐาน</h2>
+            <p class="ev-sub">คลิกการ์ดเพื่อดูรายละเอียด — เชื่อมโยงเส้นเพื่อหาความสัมพันธ์ระหว่างหลักฐาน</p>
+            <div class="ev-controls">
+                <button class="ev-btn" onclick="resetConnections()">✕ ล้างเส้นเชื่อม</button>
+                <button class="ev-btn" onclick="autoLayout()">⟳ จัดใหม่</button>
+                <span class="ev-connect-hint" id="connect-hint"></span>
+            </div>
+        </div>
+
+        <div id="cork-board">
+            <svg id="connections-svg"></svg>
+
+            <!-- Evidence Cards -->
+            <div class="ev-card" id="ev-cormac" data-id="cormac" style="left:60px;top:80px;">
+                <div class="ev-card-pin"></div>
+                <div class="ev-card-tag">SUSPECT</div>
+                <div class="ev-card-title">Father Cormac</div>
+                <div class="ev-card-body">นักบวชประจำหมู่บ้าน มีดวงตาเฉียบคม ปรากฏตัวที่จุดเกิดเหตุก่อนใครทั้งที่บ้านอยู่ฝั่งตรงข้าม</div>
+                <div class="ev-card-footer">⚑ ต้องสงสัยอันดับ 1</div>
+            </div>
+
+            <div class="ev-card" id="ev-candle" data-id="candle" style="left:310px;top:60px;">
+                <div class="ev-card-pin" style="background:#00f2fe;box-shadow:0 0 8px #00f2fe;"></div>
+                <div class="ev-card-tag" style="background:#003344;color:#00f2fe;border-color:#00f2fe;">EVIDENCE</div>
+                <div class="ev-card-title">เทียนหอม Lundenwic</div>
+                <div class="ev-card-body">ส่งออกทั่วโลก ผู้สูดดมหลับสนิทตลอดคืน Father Cormac ปฏิเสธที่จะเปิดเผยสูตร</div>
+                <div class="ev-card-footer">🕯 รายได้หลักของหมู่บ้าน</div>
+            </div>
+
+            <div class="ev-card" id="ev-plant" data-id="plant" style="left:560px;top:100px;">
+                <div class="ev-card-pin" style="background:#4a9;box-shadow:0 0 8px #4a9;"></div>
+                <div class="ev-card-tag" style="background:#012015;color:#4a9;border-color:#4a9;">SUBSTANCE</div>
+                <div class="ev-card-title">Somnaria silvestris</div>
+                <div class="ev-card-body">"ดอกไม้แห่งการหลับลึก" — พืชหายากที่ก่อให้เกิดภาวะ Somnambulism (ละเมอเดิน) รุนแรง</div>
+                <div class="ev-card-footer">🌿 สารออกฤทธิ์หลัก</div>
+            </div>
+
+            <div class="ev-card" id="ev-body" data-id="body" style="left:80px;top:310px;">
+                <div class="ev-card-pin" style="background:#cc2200;box-shadow:0 0 8px #cc2200;"></div>
+                <div class="ev-card-tag" style="background:#200;color:#ff4422;border-color:#cc2200;">CRIME SCENE</div>
+                <div class="ev-card-title">ศพที่ชายป่า</div>
+                <div class="ev-card-body">ฉีกกระชากอย่างเป็นระบบ ไม่ใช่ลักษณะสัตว์ป่า — คล้าย "จัดฉาก" เพื่อหลอกว่าเป็นงานของมนุษย์หมาป่า</div>
+                <div class="ev-card-footer">💀 ปรากฏหลังถูกสอบถามสูตรเทียน</div>
+            </div>
+
+            <div class="ev-card" id="ev-aldric" data-id="aldric" style="left:340px;top:300px;">
+                <div class="ev-card-pin" style="background:#888;box-shadow:0 0 8px #888;"></div>
+                <div class="ev-card-tag" style="background:#1a1a1a;color:#888;border-color:#555;">MISSING</div>
+                <div class="ev-card-title">Aldric — นายพรานเฒ่า</div>
+                <div class="ev-card-body">รู้จักป่าทุกซอกหลืบ พาพวกนักศึกษาไปกินข้าวเย็น แล้วหายตัวไปอย่างลึกลับ</div>
+                <div class="ev-card-footer">❓ สถานะ: ไม่ทราบ</div>
+            </div>
+
+            <div class="ev-card" id="ev-village" data-id="village" style="left:580px;top:290px;">
+                <div class="ev-card-pin" style="background:#e0ac2b;box-shadow:0 0 8px rgba(224,172,43,0.6);"></div>
+                <div class="ev-card-tag" style="background:#1a1200;color:#e0ac2b;border-color:#e0ac2b;">LOCATION</div>
+                <div class="ev-card-title">หมู่บ้าน Lundenwic</div>
+                <div class="ev-card-body">ก่อตั้ง 1523 ซ่อนอยู่ในป่าลึก ไม่มีในแผนที่สมัยใหม่ ไม่มีสัญญาณโทรศัพท์ ชาวบ้านไม่ออกนอกบ้านหลังพระอาทิตย์ตก</div>
+                <div class="ev-card-footer">📍 53.4808° N, 2.2426° W (ERROR: NOT FOUND)</div>
+            </div>
+
+            <div class="ev-card" id="ev-obscura" data-id="obscura" style="left:220px;top:500px;">
+                <div class="ev-card-pin" style="background:#aa0000;box-shadow:0 0 8px #aa0000;"></div>
+                <div class="ev-card-tag" style="background:#180000;color:#ff0000;border-color:#aa0000;">ORGANIZATION</div>
+                <div class="ev-card-title">OBSCURA INITIATIVE</div>
+                <div class="ev-card-body">องค์กรลับที่ไม่ทราบเป้าหมาย Cormac ทำงานให้กับองค์กรนี้ตั้งแต่ปี 2012 โดยใช้ Lundenwic เป็น lab ลับ</div>
+                <div class="ev-card-footer">⛧ SECTOR 7401</div>
+            </div>
+
+            <div class="ev-card" id="ev-werewolf" data-id="werewolf" style="left:500px;top:490px;">
+                <div class="ev-card-pin" style="background:#666;box-shadow:0 0 8px #444;"></div>
+                <div class="ev-card-tag" style="background:#111;color:#777;border-color:#444;">LEGEND</div>
+                <div class="ev-card-title">ตำนานมนุษย์หมาป่า</div>
+                <div class="ev-card-body">ชาวบ้านพูดถึงด้วยน้ำเสียงเหนื่อยใจ ราวกับต้องทนอยู่กับมัน ปรากฏทุกครั้งที่มีคนแปลกหน้าเข้ามา</div>
+                <div class="ev-card-footer">🐺 ฉากบังหน้า หรือของจริง?</div>
+            </div>
+        </div>
+
+        <!-- Connection Legend -->
+        <div class="ev-legend">
+            <div class="ev-legend-title">วิธีใช้กระดาน</div>
+            <div class="ev-legend-item"><span class="ev-dot" style="background:#e0ac2b;"></span> คลิกการ์ดแรก → คลิกการ์ดที่สอง = สร้างเส้นเชื่อม</div>
+            <div class="ev-legend-item"><span class="ev-dot" style="background:#00f2fe;"></span> ลากการ์ดเพื่อย้ายตำแหน่ง</div>
+            <div class="ev-legend-item"><span class="ev-dot" style="background:#aa0000;"></span> คลิกซ้ำที่การ์ดที่เลือกอยู่ = ยกเลิก</div>
+        </div>
+
+        <footer>&copy; 2026 OBSCURA INITIATIVE. [FIELD JOURNAL SECTOR 7401]. UNAUTHORIZED ACCESS PROHIBITED.</footer>
+    </div>
+
+    <!-- ========== PAGE: NOTEBOOK ========== -->
+    <div class="page" id="page-notebook">
+        <div class="nb-header">
+            <div class="ev-eyebrow">OBSCURA INITIATIVE — PERSONAL FIELD NOTES</div>
+            <h2 class="ev-title">✎ สมุดจดบันทึก</h2>
+            <p class="ev-sub">บันทึกข้อสังเกต ทฤษฎี หรือเบาะแสที่คุณพบ — ข้อมูลจะบันทึกอัตโนมัติ</p>
+        </div>
+
+        <div class="nb-container">
+            <!-- Tags -->
+            <div class="nb-tags-row">
+                <span class="nb-tag active" onclick="filterNotes('all')" data-filter="all">ทั้งหมด</span>
+                <span class="nb-tag" onclick="filterNotes('clue')" data-filter="clue">🔍 เบาะแส</span>
+                <span class="nb-tag" onclick="filterNotes('theory')" data-filter="theory">💡 ทฤษฎี</span>
+                <span class="nb-tag" onclick="filterNotes('suspect')" data-filter="suspect">⚑ ผู้ต้องสงสัย</span>
+                <span class="nb-tag" onclick="filterNotes('warning')" data-filter="warning">⚠ คำเตือน</span>
+            </div>
+
+            <!-- New note form -->
+            <div class="nb-new-form">
+                <select id="nb-cat" class="nb-select">
+                    <option value="clue">🔍 เบาะแส</option>
+                    <option value="theory">💡 ทฤษฎี</option>
+                    <option value="suspect">⚑ ผู้ต้องสงสัย</option>
+                    <option value="warning">⚠ คำเตือน</option>
+                </select>
+                <input type="text" id="nb-title-input" class="nb-title-inp" placeholder="หัวข้อบันทึก..." maxlength="60">
+                <textarea id="nb-body-input" class="nb-body-inp" placeholder="เขียนบันทึกที่นี่..." rows="3"></textarea>
+                <button class="nb-add-btn" onclick="addNote()">+ เพิ่มบันทึก</button>
+            </div>
+
+            <!-- Notes grid -->
+            <div id="notes-grid"></div>
+            <div id="nb-empty" class="nb-empty">[ ยังไม่มีบันทึก — เริ่มสืบสวนและจดสิ่งที่ค้นพบ ]</div>
+        </div>
+
+        <!-- Pre-loaded starter notes -->
+        <div id="nb-starters" style="display:none;">
+            <div data-cat="clue" data-title="เส้นเวลาของ Cormac" data-body="Father Cormac อยู่ที่จุดเกิดเหตุก่อนข่าวกระจาย ทั้งที่บ้านอยู่คนละฝั่ง — เขาต้องรู้ล่วงหน้า หรือเป็นคนก่อเหตุเอง"></div>
+            <div data-cat="theory" data-title="เทียนหอม = อาวุธ?" data-body="ถ้า Somnaria ทำให้ละเมอเดิน และเทียนส่งออกทั่วโลก — นี่คือการทดลองควบคุมมนุษย์ในวงกว้าง ไม่ใช่แค่ชาวบ้าน Lundenwic"></div>
+            <div data-cat="warning" data-title="อย่าสูดดมเทียน" data-body="ตั้งแต่คืนแรกที่จุดเทียนในห้อง ฉันนอนหลับลึกผิดปกติ ฝันแปลกๆ และจำรายละเอียดไม่ค่อยได้ตอนตื่น"></div>
+        </div>
+
+        <footer>&copy; 2026 OBSCURA INITIATIVE. [FIELD JOURNAL SECTOR 7401]. UNAUTHORIZED ACCESS PROHIBITED.</footer>
+    </div>
+
+    <!-- SELF DESTRUCT UI -->
+    <div id="self-destruct-ui">
+        <div class="warning-text">UNAUTHORIZED ACCESS DETECTED</div>
+        <div class="warning-text">TIME LIMIT EXCEEDED</div>
+        <div class="purge-text">INITIATING PROTOCOL: PURGE</div>
+        <div style="color:#333; font-size:1rem; margin-top:50px; font-family:var(--font-code);" id="close-status">DELETING FILES...</div>
+    </div>
+
+    <script>
+        // ========== TAB SWITCHING ==========
+        function switchTab(tab) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('page-' + tab).classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (tab === 'evidence') {
+                // Redraw after layout is visible
+                setTimeout(drawConnections, 100);
+            }
+            if (tab === 'notebook' && !nbInited) {
+                nbInited = true;
+                initNotebook();
+            }
+        }
+
+        // ========== FADE-IN ==========
+        const faders = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('appear');
+                    observer.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: "0px 0px -80px 0px" });
+        faders.forEach(f => observer.observe(f));
+
+        // ========== MOUSE SPOTLIGHT ==========
+        document.addEventListener('mousemove', e => {
+            document.body.style.setProperty('--mouse-x', (e.clientX / window.innerWidth * 100) + '%');
+            document.body.style.setProperty('--mouse-y', (e.clientY / window.innerHeight * 100) + '%');
+        });
+
+        // ========== TERMINAL / DECRYPT ==========
+        function openTerminal() {
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('terminal-interface').style.display = 'block';
+            document.getElementById('passcode-input').focus();
+        }
+
+        function checkCode() {
+            const input = document.getElementById('passcode-input').value;
+            const errorMsg = document.getElementById('error-msg');
+            const inputArea = document.getElementById('input-area');
+            const loadingUI = document.getElementById('loading-ui');
+            const loadingText = document.getElementById('loading-text');
+            const progressBar = document.getElementById('progress-bar');
+            const terminal = document.getElementById('terminal-interface');
+            const secretBox = document.getElementById('secret-box');
+
+            if (input === '7401') {
+                errorMsg.style.display = 'none';
+                inputArea.style.display = 'none';
+                loadingUI.style.display = 'block';
+                setTimeout(() => { progressBar.style.width = '100%'; }, 100);
+                setTimeout(() => {
+                    loadingText.style.animation = 'none';
+                    loadingText.innerHTML = '<span style="color:#00ff00;">ACCESS GRANTED</span>';
+                    progressBar.style.backgroundColor = '#00ff00';
+                    progressBar.parentElement.style.borderColor = '#00ff00';
+                }, 2700);
+                setTimeout(() => {
+                    terminal.style.display = 'none';
+                    secretBox.style.display = 'block';
+                    secretBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 4100);
+            } else {
+                errorMsg.style.display = 'block';
+                errorMsg.style.animation = 'none';
+                errorMsg.offsetHeight;
+                errorMsg.style.animation = 'shake 0.4s';
+                document.getElementById('passcode-input').value = '';
+            }
+        }
+
+        document.getElementById("passcode-input").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") { e.preventDefault(); checkCode(); }
+        });
+
+        // ========== SECRET CODE QUIZ ==========
+        let correctCount = 0;
+        const totalQuestions = 5;
+
+        const answers = {
+            1: ['นักวิจัย', 'researcher', 'นักวิจัยobscura', 'อดีตนักวิจัย', 'obscura researcher', 'นักวิจัยobscurainitiative', 'นักวิจัยoobscura'],
+            2: ['somnaria silvestris', 'somnaria', 'somnaria silvestri', 'somnariasilvestris'],
+            3: ['จัดฉาก', 'การจัดฉาก', 'staged', 'จัดฉากขึ้น', 'ไม่ใช่สัตว์ป่า', 'มนุษย์จัดฉาก'],
+            4: ['2012', 'ปี2012', '2555', 'ค.ศ.2012'],
+            5: ['7401']
+        };
+
+        function normalize(str) {
+            return str.toLowerCase().replace(/\s+/g, '').replace(/[.\-_,]/g, '');
+        }
+
+        function checkAnswer(qNum) {
+            const input = document.getElementById('ans-' + qNum);
+            const fb = document.getElementById('fb-' + qNum);
+            const card = document.getElementById('qcard-' + qNum);
+            const reveal = document.getElementById('reveal-' + qNum);
+
+            if (card.classList.contains('answered-correct')) return;
+
+            const val = normalize(input.value);
+            if (!val) return;
+
+            const isCorrect = answers[qNum].some(a => normalize(a) === val);
+
+            if (isCorrect) {
+                card.classList.add('answered-correct');
+                input.classList.add('correct');
+                input.disabled = true;
+                fb.className = 'question-feedback feedback-correct';
+                fb.textContent = '✓ CORRECT — ACCESS GRANTED';
+                reveal.style.display = 'block';
+                correctCount++;
+                updateScore();
+                if (correctCount === totalQuestions) {
+                    setTimeout(showFinalReveal, 800);
+                }
+            } else {
+                card.classList.add('answered-wrong');
+                input.classList.add('wrong');
+                fb.className = 'question-feedback feedback-wrong';
+                fb.textContent = '✗ INCORRECT — TRY AGAIN';
+                setTimeout(() => {
+                    card.classList.remove('answered-wrong');
+                    input.classList.remove('wrong');
+                    input.value = '';
+                    fb.textContent = '';
+                }, 1500);
+            }
+        }
+
+        function toggleHint(qNum) {
+            const hint = document.getElementById('hint-' + qNum);
+            hint.style.display = hint.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function updateScore() {
+            document.getElementById('score-text').textContent = correctCount + ' / ' + totalQuestions;
+            document.getElementById('score-bar-fill').style.width = (correctCount / totalQuestions * 100) + '%';
+            if (correctCount === totalQuestions) {
+                document.getElementById('score-bar-fill').style.background = '#00ff66';
+                document.getElementById('score-bar-fill').style.boxShadow = '0 0 12px #00ff66';
+            }
+        }
+
+        function showFinalReveal() {
+            document.getElementById('final-score-num').textContent = correctCount;
+            const fr = document.getElementById('final-reveal');
+            fr.style.display = 'block';
+            fr.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ========== AUDIO AMBIENCE (Web Audio API) ==========
+        let audioCtx = null;
+        let audioNodes = [];
+        let audioPlaying = false;
+
+        function buildAmbience() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const master = audioCtx.createGain();
+            master.gain.setValueAtTime(0.18, audioCtx.currentTime);
+            master.connect(audioCtx.destination);
+
+            // Wind layer — low freq filtered noise
+            function makeNoise(freq, q, gainVal, type='bandpass') {
+                const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 3, audioCtx.sampleRate);
+                const data = buf.getChannelData(0);
+                for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+                const src = audioCtx.createBufferSource();
+                src.buffer = buf; src.loop = true;
+                const flt = audioCtx.createBiquadFilter();
+                flt.type = type; flt.frequency.value = freq; flt.Q.value = q;
+                const g = audioCtx.createGain(); g.gain.value = gainVal;
+                src.connect(flt); flt.connect(g); g.connect(master);
+                src.start(); audioNodes.push(src);
+            }
+
+            makeNoise(180, 0.8, 0.6);       // deep wind
+            makeNoise(900, 1.2, 0.2);        // mid hiss
+            makeNoise(3500, 0.5, 0.05);      // high shimmer
+
+            // LFO tremolo on wind
+            const lfo = audioCtx.createOscillator();
+            const lfoGain = audioCtx.createGain();
+            lfo.frequency.value = 0.15;
+            lfoGain.gain.value = 0.06;
+            lfo.connect(lfoGain); lfo.connect(master.gain);
+            lfo.start(); audioNodes.push(lfo);
+
+            // Occasional cricket chirps
+            function chirp() {
+                if (!audioPlaying) return;
+                const osc = audioCtx.createOscillator();
+                const env = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = 3800 + Math.random() * 600;
+                env.gain.setValueAtTime(0, audioCtx.currentTime);
+                env.gain.linearRampToValueAtTime(0.04, audioCtx.currentTime + 0.01);
+                env.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.08);
+                osc.connect(env); env.connect(master);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+                const next = 400 + Math.random() * 800;
+                const repeats = Math.floor(Math.random() * 5) + 3;
+                let count = 0;
+                const interval = setInterval(() => {
+                    if (!audioPlaying || count++ >= repeats) { clearInterval(interval); return; }
+                    const o2 = audioCtx.createOscillator();
+                    const e2 = audioCtx.createGain();
+                    o2.type = 'sine'; o2.frequency.value = 3800 + Math.random() * 600;
+                    e2.gain.setValueAtTime(0, audioCtx.currentTime);
+                    e2.gain.linearRampToValueAtTime(0.035, audioCtx.currentTime + 0.01);
+                    e2.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.07);
+                    o2.connect(e2); e2.connect(master);
+                    o2.start(); o2.stop(audioCtx.currentTime + 0.08);
+                }, next);
+                setTimeout(chirp, 3000 + Math.random() * 6000);
+            }
+            setTimeout(chirp, 1500);
+        }
+
+        function toggleAudio() {
+            const btn = document.getElementById('audio-btn');
+            const icon = document.getElementById('audio-icon');
+            if (!audioPlaying) {
+                if (!audioCtx) buildAmbience();
+                else audioCtx.resume();
+                audioPlaying = true;
+                btn.classList.add('playing');
+                icon.textContent = '♫';
+            } else {
+                audioCtx.suspend();
+                audioPlaying = false;
+                btn.classList.remove('playing');
+                icon.textContent = '♪';
+            }
+        }
+
+        // ========== EVIDENCE BOARD ==========
+        let selectedCard = null;
+        let connections = []; // [{from, to}]
+        let dragging = null;
+        let dragOffset = { x: 0, y: 0 };
+
+        const board = document.getElementById('cork-board');
+        const svg = document.getElementById('connections-svg');
+        const connectHint = document.getElementById('connect-hint');
+
+        document.querySelectorAll('.ev-card').forEach(card => {
+            // Click to select/connect
+            card.addEventListener('click', e => {
+                e.stopPropagation();
+                if (dragging) return;
+                const id = card.dataset.id;
+                if (!selectedCard) {
+                    selectedCard = id;
+                    card.classList.add('selected');
+                    connectHint.textContent = `✓ เลือก "${card.querySelector('.ev-card-title').textContent}" — คลิกการ์ดที่สอง`;
+                } else if (selectedCard === id) {
+                    card.classList.remove('selected');
+                    selectedCard = null;
+                    connectHint.textContent = '';
+                } else {
+                    const exists = connections.find(c =>
+                        (c.from === selectedCard && c.to === id) ||
+                        (c.from === id && c.to === selectedCard)
+                    );
+                    if (!exists) {
+                        connections.push({ from: selectedCard, to: id });
+                        drawConnections();
+                    }
+                    document.querySelector('.ev-card.selected')?.classList.remove('selected');
+                    selectedCard = null;
+                    connectHint.textContent = `⚑ เชื่อมโยงแล้ว! (${connections.length} เส้น)`;
+                    setTimeout(() => { connectHint.textContent = ''; }, 2000);
+                }
+            });
+
+            // Drag to move
+            card.addEventListener('mousedown', e => {
+                if (e.button !== 0) return;
+                const rect = card.getBoundingClientRect();
+                const boardRect = board.getBoundingClientRect();
+                dragOffset.x = e.clientX - rect.left;
+                dragOffset.y = e.clientY - rect.top;
+                dragging = card;
+                card.classList.add('dragging');
+                e.preventDefault();
+            });
+
+            // Touch drag
+            card.addEventListener('touchstart', e => {
+                const touch = e.touches[0];
+                const rect = card.getBoundingClientRect();
+                dragOffset.x = touch.clientX - rect.left;
+                dragOffset.y = touch.clientY - rect.top;
+                dragging = card;
+                card.classList.add('dragging');
+            }, { passive: true });
+        });
+
+        document.addEventListener('mousemove', e => {
+            if (!dragging) return;
+            const boardRect = board.getBoundingClientRect();
+            let x = e.clientX - boardRect.left - dragOffset.x;
+            let y = e.clientY - boardRect.top - dragOffset.y;
+            x = Math.max(0, Math.min(board.offsetWidth - dragging.offsetWidth, x));
+            y = Math.max(0, Math.min(board.offsetHeight - dragging.offsetHeight, y));
+            dragging.style.left = x + 'px';
+            dragging.style.top = y + 'px';
+            drawConnections();
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (dragging) {
+                dragging.classList.remove('dragging');
+                dragging = null;
+            }
+        });
+
+        document.addEventListener('touchmove', e => {
+            if (!dragging) return;
+            const touch = e.touches[0];
+            const boardRect = board.getBoundingClientRect();
+            let x = touch.clientX - boardRect.left - dragOffset.x;
+            let y = touch.clientY - boardRect.top - dragOffset.y;
+            x = Math.max(0, Math.min(board.offsetWidth - dragging.offsetWidth, x));
+            y = Math.max(0, Math.min(board.offsetHeight - dragging.offsetHeight, y));
+            dragging.style.left = x + 'px';
+            dragging.style.top = y + 'px';
+            drawConnections();
+        }, { passive: true });
+
+        document.addEventListener('touchend', () => {
+            if (dragging) { dragging.classList.remove('dragging'); dragging = null; }
+        });
+
+        function getCardCenter(id) {
+            const card = document.getElementById('ev-' + id);
+            if (!card) return { x: 0, y: 0 };
+            return {
+                x: parseInt(card.style.left) + card.offsetWidth / 2,
+                y: parseInt(card.style.top) + card.offsetHeight / 2
+            };
+        }
+
+        function drawConnections() {
+            svg.innerHTML = '';
+            connections.forEach(conn => {
+                const a = getCardCenter(conn.from);
+                const b = getCardCenter(conn.to);
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', a.x); line.setAttribute('y1', a.y);
+                line.setAttribute('x2', b.x); line.setAttribute('y2', b.y);
+                line.setAttribute('class', 'connection-line');
+                svg.appendChild(line);
+            });
+        }
+
+        function resetConnections() {
+            connections = [];
+            svg.innerHTML = '';
+            document.querySelectorAll('.ev-card').forEach(c => c.classList.remove('selected'));
+            selectedCard = null;
+            connectHint.textContent = '✓ ล้างเส้นเชื่อมทั้งหมดแล้ว';
+            setTimeout(() => { connectHint.textContent = ''; }, 1500);
+        }
+
+        const defaultPositions = {
+            'cormac':   { left: '60px',  top: '80px'  },
+            'candle':   { left: '310px', top: '60px'  },
+            'plant':    { left: '560px', top: '100px' },
+            'body':     { left: '80px',  top: '310px' },
+            'aldric':   { left: '340px', top: '300px' },
+            'village':  { left: '580px', top: '290px' },
+            'obscura':  { left: '220px', top: '500px' },
+            'werewolf': { left: '500px', top: '490px' },
+        };
+
+        function autoLayout() {
+            document.querySelectorAll('.ev-card').forEach(card => {
+                const pos = defaultPositions[card.dataset.id];
+                if (pos) { card.style.left = pos.left; card.style.top = pos.top; }
+            });
+            drawConnections();
+        }
+
+        // ========== NOTEBOOK ==========
+        let notes = [];
+        let currentFilter = 'all';
+        const catLabels = { clue: '🔍 เบาะแส', theory: '💡 ทฤษฎี', suspect: '⚑ ผู้ต้องสงสัย', warning: '⚠ คำเตือน' };
+        const catColors = { clue: '#00aabb', theory: '#ccaa00', suspect: '#aa2200', warning: '#aa6600' };
+
+        function initNotebook() {
+            const stored = localStorage.getItem('lundenwic_notes');
+            if (stored) {
+                notes = JSON.parse(stored);
+            } else {
+                // Load starters
+                document.querySelectorAll('#nb-starters > div').forEach(el => {
+                    notes.push({
+                        id: Date.now() + Math.random(),
+                        cat: el.dataset.cat,
+                        title: el.dataset.title,
+                        body: el.dataset.body,
+                        time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
+                    });
+                });
+                saveNotes();
+            }
+            renderNotes();
+        }
+
+        function saveNotes() {
+            try { localStorage.setItem('lundenwic_notes', JSON.stringify(notes)); } catch(e) {}
+        }
+
+        function addNote() {
+            const cat = document.getElementById('nb-cat').value;
+            const title = document.getElementById('nb-title-input').value.trim();
+            const body = document.getElementById('nb-body-input').value.trim();
+            if (!title && !body) return;
+            notes.unshift({
+                id: Date.now(),
+                cat, title: title || '(ไม่มีหัวข้อ)', body,
+                time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
+            });
+            saveNotes();
+            document.getElementById('nb-title-input').value = '';
+            document.getElementById('nb-body-input').value = '';
+            renderNotes();
+        }
+
+        function deleteNote(id) {
+            notes = notes.filter(n => n.id !== id);
+            saveNotes();
+            renderNotes();
+        }
+
+        function filterNotes(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.nb-tag').forEach(t => {
+                t.classList.toggle('active', t.dataset.filter === filter);
+            });
+            renderNotes();
+        }
+
+        function renderNotes() {
+            const grid = document.getElementById('notes-grid');
+            const empty = document.getElementById('nb-empty');
+            const filtered = currentFilter === 'all' ? notes : notes.filter(n => n.cat === currentFilter);
+            grid.innerHTML = '';
+            if (filtered.length === 0) {
+                empty.style.display = 'block';
+            } else {
+                empty.style.display = 'none';
+                filtered.forEach(note => {
+                    const div = document.createElement('div');
+                    div.className = 'nb-note';
+                    div.dataset.cat = note.cat;
+                    div.innerHTML = `
+                        <button class="nb-note-del" onclick="deleteNote(${note.id})">✕</button>
+                        <div class="nb-note-cat" style="color:${catColors[note.cat]}">${catLabels[note.cat]}</div>
+                        <div class="nb-note-title">${escHtml(note.title)}</div>
+                        <div class="nb-note-body">${escHtml(note.body)}</div>
+                        <div class="nb-note-time">— ${note.time}</div>
+                    `;
+                    grid.appendChild(div);
+                });
+            }
+        }
+
+        function escHtml(str) {
+            return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
+        // Init notebook when tab opens (lazy)
+        let nbInited = false;
+
+        // ========== GLITCH ==========
+        function triggerGlitch() {
+            const els = document.querySelectorAll('h1, h2, .highlight, .mikucode-line');
+            const n = Math.floor(Math.random() * 3) + 1;
+            for (let i = 0; i < n; i++) {
+                const el = els[Math.floor(Math.random() * els.length)];
+                const cls = Math.random() > 0.5 ? 'glitch-flash' : 'glitch-shift';
+                el.classList.add(cls);
+                setTimeout(() => el.classList.remove(cls), 200);
+            }
+            setTimeout(triggerGlitch, Math.random() * 3000 + 1200);
+        }
+        setTimeout(triggerGlitch, 2500);
+
+        // ========== COUNTDOWN / SELF DESTRUCT ==========
+        let timeLeft = 1000;
+        const timerEl = document.getElementById('time-left');
+        const timerDisplay = document.getElementById('timer-display');
+        const destructUI = document.getElementById('self-destruct-ui');
+
+        const countdown = setInterval(() => {
+            timeLeft--;
+            timerEl.textContent = timeLeft;
+            if (timeLeft <= 10) {
+                timerDisplay.style.color = '#ff0000';
+                timerDisplay.style.opacity = '1';
+                timerDisplay.style.animation = 'blink 0.5s infinite';
+            }
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                document.body.innerHTML = '';
+                document.body.appendChild(destructUI);
+                destructUI.style.display = 'flex';
+                setTimeout(() => {
+                    window.close();
+                    setTimeout(() => {
+                        destructUI.innerHTML = '<div style="color:#333; font-size:1.2rem; text-align:center; font-family:monospace;">[ CONNECTION TERMINATED ]<br><br>DATA WIPED.<br>PLEASE CLOSE THIS TAB.</div>';
+                    }, 400);
+                }, 3000);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
